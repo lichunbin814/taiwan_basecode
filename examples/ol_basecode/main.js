@@ -7,6 +7,7 @@ var layerStyle = new ol.style.Style({
         color: 'rgba(0,200,200,0.1)'
     })
 });
+var targetLayer;
 
 var projection = ol.proj.get('EPSG:3857');
 var projectionExtent = projection.getExtent();
@@ -18,6 +19,7 @@ for (var z = 0; z < 20; ++z) {
     resolutions[z] = size / Math.pow(2, z);
     matrixIds[z] = z;
 }
+var popup = new ol.Overlay.Popup();
 
 /*
  * layer
@@ -84,20 +86,42 @@ var map = new ol.Map({
         zoom: 10
     })
 });
+map.addOverlay(popup);
 map.on('singleclick', onLayerClick);
 
 function onLayerClick(e) {
+    var hasFeature = false;
     map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
         var p = feature.getProperties();
-        var targetLayer = new ol.layer.Vector({
-            source: new ol.source.Vector({
-                url: '../../base/topo/' + p.COUNTYCODE + '/' + p.TOWNCODE + '.json',
-                format: new ol.format.TopoJSON()
-            }),
-            style: layerStyle
-        });
-        map.addLayer(targetLayer);
-        //map.getView().setCenter(targetLayer.getExtent().getCenter());
-        cityLayer.setVisible(false);
+        if (p.TOWNCODE) {
+            targetLayer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    url: '../../base/topo/' + p.COUNTYCODE + '/' + p.TOWNCODE + '.json',
+                    format: new ol.format.TopoJSON()
+                }),
+                style: layerStyle
+            });
+            map.addLayer(targetLayer);
+            cityLayer.setVisible(false);
+            map.getView().setCenter(e.coordinate);
+            map.getView().setZoom(12);
+        } else {
+            var message = '';
+            for(k in p) {
+                if(k !== 'geometry') {
+                    message += k + ': ' + p[k] + '<br />';
+                }
+            }
+            popup.show(e.coordinate, message);
+            map.getView().setCenter(e.coordinate);
+            map.getView().setZoom(14);
+        }
+        hasFeature = true;
     });
+    if(false === hasFeature) {
+        cityLayer.setVisible(true);
+        map.getView().setZoom(12);
+        targetLayer.setVisible(false);
+        popup.hide();
+    }
 }

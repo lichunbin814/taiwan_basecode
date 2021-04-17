@@ -6,5 +6,8 @@ if(!file_exists($targetPath)) {
 }
 foreach(glob(__DIR__ . '/geo/*.json') AS $jsonFile) {
   $p = pathinfo($jsonFile);
-  exec("/usr/local/bin/mapshaper -i {$jsonFile} -o format=topojson {$targetPath}/{$p['basename']}");
+  $targetFile = "{$targetPath}/{$p['basename']}";
+  if(!file_exists($targetFile)) {
+    exec("/usr/local/bin/mapshaper -i {$jsonFile} -o format=topojson {$targetFile}");
+  }
 }

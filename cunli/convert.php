@@ -7,7 +7,8 @@ foreach(glob(__DIR__ . '/shp/*/*.shp') AS $shpFile) {
     $y = pathinfo($p['dirname']);
     $geoFile = __DIR__ . '/geo/' . $y['filename'] . '.json';
     if(!file_exists($geoFile)) {
-      exec('/usr/bin/ogr2ogr -t_srs EPSG:4326 -s_srs EPSG:3826 -f "GeoJSON" -lco ENCODING=UTF-8 ' . $geoFile . ' ' . $shpFile);
+      exec('/usr/bin/ogr2ogr -f "GeoJSON" ' . $geoFile . ' ' . $shpFile);
+      //exec('/usr/bin/ogr2ogr -t_srs EPSG:4326 -s_srs EPSG:3826 -f "GeoJSON" -lco ENCODING=UTF-8 ' . $geoFile . ' ' . $shpFile);
     }
   }
 }

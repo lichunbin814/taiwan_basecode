@@ -7,7 +7,7 @@
  *                              **`panMapIfOutOfView`** `Boolean` - Should the
  *                              map be panned so that the popup is entirely
  *                              within view.
- *                              
+ *
  * @author MIT (c) Matt Walker. - https://github.com/walkermatt/ol3-popup
  */
 ol.Overlay.Popup = function(opt_options) {
